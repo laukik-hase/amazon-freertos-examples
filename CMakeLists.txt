@@ -21,11 +21,15 @@ get_filename_component(
 
 # Add some extra components. IDF_EXTRA_COMPONENT_DIRS is an variable used by ESP-IDF
 # to collect extra components.
-get_filename_component(
-    EXTRA_COMPONENT_DIRS
-    "components/foo" ABSOLUTE
-)
-idf_build_component(${EXTRA_COMPONENT_DIRS})
+list(APPEND extra_components_dir "components/foo" "freertos/vendors/espressif/esp-idf/examples/protocols/modbus/serial/mb_example_common")
+
+foreach(dir ${extra_components_dir})
+    get_filename_component(
+        EXTRA_COMPONENT_DIRS
+        "${dir}" ABSOLUTE
+    )
+    idf_build_component(${EXTRA_COMPONENT_DIRS})
+endforeach()
 
 # As of now there's no offical way to redefine config files outside of FreeRTOS source tree.
 # This is a temporary approach to inject an include path so that this takes precedence over the
@@ -48,4 +52,6 @@ target_link_libraries(
     AFR::demo_core_mqtt
     AFR::common_io
     idf::foo
+    idf::freemodbus
+    idf::mb_example_common
 )
